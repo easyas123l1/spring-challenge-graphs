@@ -80,6 +80,9 @@ while len(stack) > 0:
     if room_id in cache:
         if len(cache[room_id]) > 0:
             directions = stack.pop()
+            # if len(directions) > 1:
+            #     direction = directions.pop(1)
+            # else:
             direction = directions.pop(0)
             if len(directions) > 0:
                 stack.append(directions)
@@ -97,7 +100,6 @@ while len(stack) > 0:
                 go_back_inner.append(opposite_direction)
                 test = test_loop(go_back_inner)
                 if test:
-                    print('it happened')
                     traversal_path.append(direction)
                     go_back_inner = []
                 else:
