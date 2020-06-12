@@ -26,10 +26,8 @@ world.print_rooms()
 player = Player(world.starting_room)
 
 # Fill this out with directions to walk
-# traversal_path = ['n', 'n']
 traversal_path = []
 
-# traversal_path.append('n')
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
@@ -60,6 +58,12 @@ else:
 #         break
 #     else:
 #         print("I did not understand that command.")
+opposite = {
+    s: 'n',
+    n: 's',
+    e: 'w',
+    w: 'e'
+}
 
 if __name__ == '__main__':
     print('hi')
@@ -67,8 +71,11 @@ if __name__ == '__main__':
     # traversal_path
 
     stack = []
+    go_back = []
+    go_back_inner = []
     cache = {}
 
+    cache[player.current_room.id] = player.current_room.get_exits()
     stack.append(cache[player.current_room.id])
     # player.current_room.id
     # player.current_room.get_exits()
@@ -76,10 +83,20 @@ if __name__ == '__main__':
         directions = stack.pop()
         direction = directions.pop(0)
         traversal_path.append(direction)
-        stack.append(directions)
-        # cache holds the value to get back to start.
-        cache[player.current_room.id] = direction
-    # player.travel(direction)
+        if len(directions) > 0:
+            stack.append(directions)
+
+        # cache holds the value of untested directions
+        opposite_direction = opposite[direction]
+        go_back_inner.append(opposite_direction)
+        player.travel(direction)
+        room_id = player.current_room.id
+        if room_id in cache:
+
+        else:
+            rooms = player.current_room.get_exits()
+            rooms.remove(opposite_direction)
+            cache[room_id] = rooms
 
     # my strategy is to completely destroy this project!
     # under 1000 moves!
