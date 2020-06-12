@@ -52,6 +52,19 @@ def go_backwards(backwards_list):
         traversal_path.append(direction)
 
 
+def test_loop(backwards_list):
+    possible_directions = {}
+    for x in backwards_list:
+        if x in possible_directions:
+            possible_directions[x] += 1
+        else:
+            possible_directions[x] = 1
+    if 'n' in possible_directions and 's' in possible_directions and 'e' in possible_directions and 'w' in possible_directions:
+        if possible_directions['n'] == possible_directions['s'] and possible_directions['e'] == possible_directions['w']:
+            return True
+    return False
+
+
 stack = []
 go_back = []
 go_back_inner = []
@@ -60,8 +73,6 @@ cache = {}
 
 cache[player.current_room.id] = player.current_room.get_exits()
 stack.append(cache[player.current_room.id])
-# player.current_room.id
-# player.current_room.get_exits()
 while len(stack) > 0:
     # players current room id
     room_id = player.current_room.id
@@ -82,13 +93,22 @@ while len(stack) > 0:
                 # this way will be searched later dont go this way
                 # remove direction from future room
                 cache[room_id].remove(opposite_direction)
-                # go back to original position
-                player.travel(opposite_direction)
-                # if go_back_inner len is greater then 1 then we need to call the function to go backwards.
-                if len(go_back_inner) > 0:
-                    go_backwards(go_back_inner)
-                    # go_back_inner set back to empty as we have went backwards
+                #
+                go_back_inner.append(opposite_direction)
+                test = test_loop(go_back_inner)
+                if test:
+                    print('it happened')
+                    traversal_path.append(direction)
                     go_back_inner = []
+                else:
+                    go_back_inner.pop()
+                    # go back to original position
+                    player.travel(opposite_direction)
+                    # if go_back_inner len is greater then 1 then we need to call the function to go backwards.
+                    if len(go_back_inner) > 0:
+                        go_backwards(go_back_inner)
+                        # go_back_inner set back to empty as we have went backwards
+                        go_back_inner = []
             else:
                 # append the direction
                 traversal_path.append(direction)
@@ -124,6 +144,7 @@ while len(stack) > 0:
         stack.pop()
     # clean stack
     for i in reversed(range(len(stack))):
+        # reverse loop to avoid index out of range
         if len(stack[i]) == 0:
             stack.pop(i)
 
