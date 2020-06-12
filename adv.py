@@ -65,6 +65,10 @@ opposite = {
     w: 'e'
 }
 
+
+def go_backwards(backwards_list):
+
+
 if __name__ == '__main__':
     print('hi')
     print(player.current_room.get_exits())
@@ -73,6 +77,7 @@ if __name__ == '__main__':
     stack = []
     go_back = []
     go_back_inner = []
+    # cache holds the value of untested directions
     cache = {}
 
     cache[player.current_room.id] = player.current_room.get_exits()
@@ -80,31 +85,49 @@ if __name__ == '__main__':
     # player.current_room.id
     # player.current_room.get_exits()
     while len(stack) > 0:
-        directions = stack.pop()
-        direction = directions.pop(0)
-        traversal_path.append(direction)
-        if len(directions) > 0:
-            stack.append(directions)
-
-        # cache holds the value of untested directions
-        opposite_direction = opposite[direction]
-        go_back_inner.append(opposite_direction)
-        player.travel(direction)
+        # players current room id
         room_id = player.current_room.id
-        if room_id in cache:
+        # check that cache[room_id] has locations to go.
+        if len(cache[room_id]) > 0:
+            directions = stack.pop()
+            # this should be unneccasary code with the if check above.
+            # while len(directions) == 0:
+            #     directions = stack.pop()
+            #     go_backwards(go_back.pop())
+            direction = directions.pop(0)
+            if len(directions) > 0:
+                stack.append(directions)
+            room_id = player.current_room.id
+            if room_id in cache:
+                # this way will be searched later dont go this way
+                # remove direction from future room
+                cache[room_id].remove(opposite_direction)
+                # if go_back_inner len is greater then 1 then we need to call the function to go backwards.
+                if len(go_back_inner) > 0:
+                    go_backwards(go_back_inner)
+                    # go_back_inner set back to empty as we have went backwards
+                    go_back_inner = []
+            else:
+                traversal_path.append(direction)
+                opposite_direction = opposite[direction]
+                go_back_inner.append(opposite_direction)
+                player.travel(direction)
+                rooms = player.current_room.get_exits()
+                rooms.remove(opposite_direction)
+                if len(rooms) > 0:
+                    cache[room_id] = rooms
+                    stack.append(cache[room_id])
+                else:
 
+                    # go back **TODO**
         else:
-            rooms = player.current_room.get_exits()
-            rooms.remove(opposite_direction)
-            cache[room_id] = rooms
+            # go back
 
-    # my strategy is to completely destroy this project!
-    # under 1000 moves!
-    # First we append the first rooms get exits
-    # then we do a loop for as long as as len(stack) > 0
-    # we append the first direction priortizing n
-    # we also hold a cache of all visited locations
-    # first n, s, w, and lastly e.
-    # we also hold another array which is a stack
-    # as well that holds the directions we take and pops off
-    # when needing to go backwards.
+            # First we append the first rooms get exits
+            # then we do a loop for as long as as len(stack) > 0
+            # we append the first direction priortizing n
+            # we also hold a cache of all visited locations
+            # first n, s, w, and lastly e.
+            # we also hold another array which is a stack
+            # as well that holds the directions we take and pops off
+            # when needing to go backwards.
